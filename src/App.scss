@@ -148,6 +148,10 @@ nav{
     height: fit-content;
     flex-direction: column;
   }
+  #root{
+    width: 100%;
+    height: auto;
+  }
   .card-grid{
     grid-template-columns: repeat(2, 1fr);
     width: 70%;
@@ -158,6 +162,10 @@ nav{
   nav { 
     height: fit-content;
     flex-direction: column;
+  }
+  #root{
+    width: 100%;
+    height: auto;
   }
   .card-grid{
     grid-template-columns: repeat(2, 1fr);
