@@ -1,45 +1,17 @@
 import { useState, useEffect } from "react";
 import "./App.scss";
 
-
 function useCharacters() {
-  const [characters, setCharacters] = useState([]); 
+  const [characters, setCharacters] = useState([]);
+  const [visitedCharacters, setVisitedCharacters] = useState([]);
 
   useEffect(() => {
     fetch("https://rickandmortyapi.com/api/character") // [1,2,3,4,5,6,7,8,9,10
       .then((response) => response.json())
-      .then((data) => setCharacters(data.results));
+      .then((data) => setCharacters(data.results.slice(0, 15)));
   }, []);
 
-  console.log(characters);
-
-  return characters;
-}
-
-function onCardClick() {
-  console.log("Card Clicked");
-  //update visited characters
-
-  //update current score
-  //update high score
-
-  //shuffle the characters
-
-  //return the first 9 characters
-
-  //if current score is 9, show results
-
-  //if current score is 9, reset current score
-
-  //if current score is 9, shuffle the characters
-
-  //if current score is 9, return the first 9 characters
-
-  //if current score is 9, update high score
-
-  //if current score is 9, update visited characters
-
-  
+  return { characters, visitedCharacters, setVisitedCharacters };
 }
 
 function Navbar() {
@@ -55,57 +27,73 @@ function Score({ currentScore, highScore }) {
   return (
     //currentScore and highScore are props
     <div className="score">
-      <p>Current Score: {currentScore}</p>
-      <p>High Score: {highScore}</p>
+      <p className="current-score">Current Score: <span>{currentScore}</span></p>
+      <p className="high-score">High Score: <span>{highScore}</span></p>
     </div>
   );
 }
 
-function CardGrid() {
-  const characters = useCharacters();
-  //take random 9 characters but atleast 1 unique character
-  //shuffle the characters
-  //return the first 9 characters
+function CardGrid( { currentScore, setCurrentScore, highScore, setHighScore }) {
+  const { characters, visitedCharacters, setVisitedCharacters } =
+    useCharacters();
+
+  const unvisitedCharacters = characters.filter(
+    (character) => !visitedCharacters.includes(character.id)
+  );
 
   const shuffledCharacters = characters.sort(() => Math.random() - 0.5);
+
   const selectedCharacters = shuffledCharacters.slice(0, 9);
 
 
-  return (  
+
+
+  const handleClick = (id) => {
+    if (visitedCharacters.includes(id)) {
+      setVisitedCharacters([]);
+      setCurrentScore(0);
+
+
+    } else {
+      setVisitedCharacters([...visitedCharacters, id]);
+      const newScore = currentScore + 1;
+      setCurrentScore(newScore);
+      if (newScore > highScore) {
+        setHighScore(newScore);
+      }
+
+    }
+  };
+
+  return (
     <div className="card-grid">
       {selectedCharacters.map((character) => (
-        <Card key={character.id} character={character} />
+        <div className="card" key={character.id}>
+        <img src={character.image} alt={character.name} onClick={() => handleClick(character.id)} />
+        <p>{character.name}</p>
+        </div>
       ))}
     </div>
   );
-
-  //return <div className="card-grid"></div>;
-
 }
 
-function Card({ character }) {
-  return (
-    <div className="card">
-      <img src={character.image} alt={character.name} />
-      <p>{character.name}</p>
-    </div>
-  );
-}
 
 
 
 function App() {
-  
   const [currentScore, setCurrentScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
-
 
   return (
     <>
       <Navbar />
       <Score currentScore={currentScore} highScore={highScore} />
-      <CardGrid />
-
+      <CardGrid
+        currentScore={currentScore}
+        setCurrentScore={setCurrentScore}
+        highScore={highScore}
+        setHighScore={setHighScore}
+      />
 
       {/*
       <Results /> */}
